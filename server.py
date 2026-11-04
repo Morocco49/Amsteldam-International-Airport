@@ -148,9 +148,10 @@ class Handler(SimpleHTTPRequestHandler):
                 print("FOUT BIJ OPHALEN VLUCHTEN:", repr(e))
                 import traceback
                 traceback.print_exc()
-                self.send_error(
-                    500,
-                    "Er ging iets mis bij het ophalen van vluchten."
+               self.send_error(
+    500,
+    "FOUT: " + repr(e)
+)
                 )
 
             return
