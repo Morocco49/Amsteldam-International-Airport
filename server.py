@@ -104,6 +104,7 @@ class Handler(SimpleHTTPRequestHandler):
                         )
 
                     batch = payload.get("flights", [])
+                    print("VOORBEELD VLUCHT:", json.dumps(batch[0], ensure_ascii=False) if batch else "Geen vluchten")
                     all_flights.extend(batch)
 
                     if len(batch) < 20:
@@ -111,6 +112,7 @@ class Handler(SimpleHTTPRequestHandler):
 
                 data = json.dumps({
                     "flights": all_flights
+                
                 }, ensure_ascii=False).encode("utf-8")
 
                 self.send_response(200)
