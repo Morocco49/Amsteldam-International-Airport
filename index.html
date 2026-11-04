@@ -69,7 +69,17 @@ function render(){
   let sig=[f.scheduleTime,f.flightName,f.route,f.gate,remark].join("|");
   let changed=previous[id]!==undefined&&previous[id]!==sig;
   previous[id]=sig;
-  let destination=(f.route||"").split("-").filter(Boolean).slice(-1)[0]||"—";
+  let route = f.route;
+
+if (Array.isArray(route)) {
+    route = route.join("-");
+} else if (route && typeof route === "object") {
+    route = route.displayCode ?? route.iata ?? route.code ?? route.name ?? "";
+} else {
+    route = String(route ?? "");
+}
+
+let destination = route.split("-").filter(Boolean).slice(-1)[0] || "—";
   let destName=f.destination?.publicName||f.destination?.name||destination;
   let time=(f.publicEstimatedOffBlockTime||f.scheduleTime||"—").slice(0,5);
   return `<tr class="${changed?"changed":""}"><td class="time">${value(time)}</td><td class="flight">${value(f.flightName)}</td><td class="dest">${value(destName)} <span class="muted">(${destination})</span></td><td>${value(f.gate)}</td><td class="remark">${remark}</td></tr>`
