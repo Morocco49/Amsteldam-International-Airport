@@ -9,7 +9,8 @@ import urllib.error
 
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 BASE = "https://api.schiphol.nl/public/public-flights/v4"
 TOKEN_URL = "https://api.auth.schiphol.nl/oauth/token"
@@ -82,6 +83,7 @@ class Handler(SimpleHTTPRequestHandler):
 
                 token = get_token(cfg)
                 all_flights = []
+                now = datetime.now(ZoneInfo("Europe/Amsterdam"))
 
                 for page_no in range(5):
                     url = BASE + "/flights?" + urllib.parse.urlencode({
@@ -102,13 +104,27 @@ class Handler(SimpleHTTPRequestHandler):
                         payload = json.loads(
                             res.read().decode("utf-8")
                         )
-
                     batch = payload.get("flights", [])
-                    print("VOORBEELD VLUCHT:", json.dumps(batch[0], ensure_ascii=False) if batch else "Geen vluchten")
-                    all_flights.extend(batch)
+
+                    for flight in batch:
+                        departure_time = flight.get("scheduleTime")
+
+                        if departure_time:
+                            departure = datetime.fromisoformat(
+                                departure_time.replace("Z", "+00:00")
+                            )
+
+                            if departure.tzinfo is None:
+                                departure = departure.replace(
+                                    tzinfo=ZoneInfo("Europe/Amsterdam")
+                                )
+
+                            if departure >= now:
+                                all_flights.append(flight)
 
                     if len(batch) < 20:
                         break
+                   
 
                 data = json.dumps({
                     "flights": all_flights
