@@ -65,6 +65,7 @@ function value(x){return x===null||x===undefined||x===""?"—":x}
 function render(){
  const body=$("rows");if(!flights.length){body.innerHTML=`<tr><td colspan="5">${T().none}</td></tr>`;return}
  body.innerHTML=flights.map(f=>{
+console.log("VLUCHTSTATUS:", f.publicFlightState);
 let id=f.id||f.flightName,remark=translateStatus(f.publicFlightState?.flightStates);
   let sig=[f.scheduleTime,f.flightName,f.route,f.gate,remark].join("|");
   let changed=previous[id]!==undefined&&previous[id]!==sig;
