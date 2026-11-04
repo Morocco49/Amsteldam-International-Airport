@@ -108,8 +108,11 @@ async function load(){
   const data=await r.json();flights=(data.flights||[]).sort((a,b)=>(a.scheduleTime||"").localeCompare(b.scheduleTime||""));
   lastUpdated=new Date();$("status").textContent="Live data · bijgewerkt "+lastUpdated.toLocaleTimeString("nl-NL");
   render();
- }catch(e){$("status").textContent="Niet verbonden";$("rows").innerHTML=`<tr><td colspan="5">Kan geen live vluchtgegevens ophalen. ${String(e.message).replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]))}</td></tr>`}
-}
+}catch(e){
+    console.error("FOUT BIJ LADEN:", e);
+    $("status").textContent="Fout bij laden";
+    $("rows").innerHTML=`<tr><td colspan="5">Fout: ${String(e.message)}</td></tr>`;
+}}
 $("full").onclick=async()=>{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()};
 document.addEventListener("fullscreenchange",()=>document.body.classList.toggle("fullscreen",!!document.fullscreenElement));
 $("refresh").onclick=load;
