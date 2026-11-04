@@ -66,16 +66,6 @@ function translateStatus(s) {
 
   
 
-    let x = String(raw ?? "").toLowerCase();
-
-    if (x.includes("boarding")) return T().boarding;
-    if (x.includes("delay")) return T().delayed;
-    if (x.includes("cancel")) return T().cancelled;
-    if (x.includes("depart") || x.includes("airborne")) return T().departed;
-    if (x.includes("on time") || x.includes("expected")) return T().on;
-
-    return raw || T().unknown;
-}
 function T(){return translations[langs[langIndex]]}
 function applyLanguage(){let t=T();$("airportSub").textContent=t.sub;$("h-time").textContent=t.time;$("h-flight").textContent=t.flight;$("h-dest").textContent=t.dest;$("h-gate").textContent=t.gate;$("h-remark").textContent=t.remark;$("foot").textContent=t.foot;$("full").textContent=t.full;$("refresh").textContent=t.refresh;render()}
 function clock(){let d=new Date();$("clock").textContent=d.toLocaleTimeString("nl-NL");$("date").textContent=d.toLocaleDateString("nl-NL",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}
