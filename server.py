@@ -140,12 +140,17 @@ class Handler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(data)
 
-            except urllib.error.HTTPError as e:
+                        except urllib.error.HTTPError as e:
                 self.send_error(
                     e.code,
                     "Schiphol API-fout: HTTP " + str(e.code)
                 )
 
+            except Exception as e:
+                print("FOUT BIJ OPHALEN VLUCHTEN:", repr(e))
+                import traceback
+                traceback.print_exc()
+                self.send_error(500, "Er ging iets mis bij het ophalen van vluchten.")
                         except Exception as e:
                 print("FOUT BIJ OPHALEN VLUCHTEN:", repr(e))
                 import traceback
