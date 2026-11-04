@@ -41,7 +41,23 @@ zh:{sub:"出发航班 · 史基浦机场官方航班数据",time:"时间",flight
 };
 const langs=["nl","en","fr","zh"];let langIndex=0,flights=[],previous={},lastUpdated=null;
 const $=id=>document.getElementById(id);
-function translateStatus(s){let x=(s||"").toLowerCase();if(x.includes("boarding"))return T().boarding;if(x.includes("delay"))return T().delayed;if(x.includes("cancel"))return T().cancelled;if(x.includes("depart")||x.includes("airborne"))return T().departed;if(x.includes("on time")||x.includes("expected"))return T().on;return s||T().unknown}
+function translateStatus(s) {
+    let raw = s;
+
+    if (s && typeof s === "object") {
+        raw = s.publicStatus ?? s.status ?? s.state ?? s.name ?? s.value ?? "";
+    }
+
+    let x = String(raw ?? "").toLowerCase();
+
+    if (x.includes("boarding")) return T().boarding;
+    if (x.includes("delay")) return T().delayed;
+    if (x.includes("cancel")) return T().cancelled;
+    if (x.includes("depart") || x.includes("airborne")) return T().departed;
+    if (x.includes("on time") || x.includes("expected")) return T().on;
+
+    return raw || T().unknown;
+}
 function T(){return translations[langs[langIndex]]}
 function applyLanguage(){let t=T();$("airportSub").textContent=t.sub;$("h-time").textContent=t.time;$("h-flight").textContent=t.flight;$("h-dest").textContent=t.dest;$("h-gate").textContent=t.gate;$("h-remark").textContent=t.remark;$("foot").textContent=t.foot;$("full").textContent=t.full;$("refresh").textContent=t.refresh;render()}
 function clock(){let d=new Date();$("clock").textContent=d.toLocaleTimeString("nl-NL");$("date").textContent=d.toLocaleDateString("nl-NL",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}
