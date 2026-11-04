@@ -146,9 +146,11 @@ class Handler(SimpleHTTPRequestHandler):
                     "Schiphol API-fout: HTTP " + str(e.code)
                 )
 
-            except Exception:
+                        except Exception as e:
+                print("FOUT BIJ OPHALEN VLUCHTEN:", repr(e))
+                import traceback
+                traceback.print_exc()
                 self.send_error(500, "Er ging iets mis bij het ophalen van vluchten.")
-
             return
 
         return super().do_GET()
