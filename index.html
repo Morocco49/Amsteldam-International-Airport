@@ -60,9 +60,9 @@ function translateStatus(s) {
     if (states.includes("DEP")) return T().departed;
     if (states.includes("SCH")) return T().on;
 
-return T().unknown;
+    return T().unknown;
 }
-    let raw = s;
+   
 
     if (s && typeof s === "object") {
         raw = s.publicStatus ?? s.status ?? s.state ?? s.name ?? s.value ?? "";
