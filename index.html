@@ -42,6 +42,26 @@ zh:{sub:"出发航班 · 史基浦机场官方航班数据",time:"时间",flight
 const langs=["nl","en","fr","zh"];let langIndex=0,flights=[],previous={},lastUpdated=null;
 const $=id=>document.getElementById(id);
 function translateStatus(s) {
+    let states = [];
+
+    if (Array.isArray(s)) {
+        states = s;
+    } else if (s && typeof s === "object") {
+        states = s.flightStates || s.codes || [];
+    }
+
+    if (typeof states === "string") {
+        states = [states];
+    }
+
+    if (states.includes("CNL")) return T().cancelled;
+    if (states.includes("DEL")) return T().delayed;
+    if (states.includes("BRD")) return T().boarding;
+    if (states.includes("DEP")) return T().departed;
+    if (states.includes("SCH")) return T().on;
+
+    return T().unknown;
+} {
     let raw = s;
 
     if (s && typeof s === "object") {
