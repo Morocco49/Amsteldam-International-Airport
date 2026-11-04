@@ -124,11 +124,9 @@ class Handler(SimpleHTTPRequestHandler):
 
                     if len(batch) < 20:
                         break
-                   
-
+        
                 data = json.dumps({
                     "flights": all_flights
-                
                 }, ensure_ascii=False).encode("utf-8")
 
                 self.send_response(200)
@@ -140,7 +138,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(data)
 
-                        except urllib.error.HTTPError as e:
+            except urllib.error.HTTPError as e:
                 self.send_error(
                     e.code,
                     "Schiphol API-fout: HTTP " + str(e.code)
@@ -150,12 +148,11 @@ class Handler(SimpleHTTPRequestHandler):
                 print("FOUT BIJ OPHALEN VLUCHTEN:", repr(e))
                 import traceback
                 traceback.print_exc()
-                self.send_error(500, "Er ging iets mis bij het ophalen van vluchten.")
-                        except Exception as e:
-                print("FOUT BIJ OPHALEN VLUCHTEN:", repr(e))
-                import traceback
-                traceback.print_exc()
-                self.send_error(500, "Er ging iets mis bij het ophalen van vluchten.")
+                self.send_error(
+                    500,
+                    "Er ging iets mis bij het ophalen van vluchten."
+                )
+
             return
 
         return super().do_GET()
@@ -172,3 +169,4 @@ if __name__ == "__main__":
     print("Amsteldam Airport is gestart op poort", port)
 
     server.serve_forever()
+
