@@ -83,8 +83,8 @@ let id=f.id||f.flightName,remark=translateStatus(f.publicFlightState?.flightStat
 let destination = Array.isArray(destinations) && destinations.length
     ? destinations[destinations.length - 1]
     : "—";
-  let destName=f.destination?.publicName||f.destination?.name||destination;
-  let time=(f.publicEstimatedOffBlockTime||f.scheduleTime||"—").slice(0,5);
+  let destName=f.destination?.publicName||f.destination?.name||destination;let time = (f.publicEstimatedOffBlockTime || f.scheduleTime || "—");
+time = time.includes("T") ? time.split("T")[1].slice(0,5) : time.slice(0,5);
   return `<tr class="${changed?"changed":""}"><td class="time">${value(time)}</td><td class="flight">${value(f.flightName)}</td><td class="dest">${value(destName)} <span class="muted">(${destination})</span></td><td>${value(f.gate)}</td><td class="remark">${remark}</td></tr>`
  }).join("");
 }
