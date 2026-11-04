@@ -103,9 +103,21 @@ async function load(){
 
         const data = await r.json();
 
-        flights = (data.flights || []).sort((a,b) =>
-            (a.scheduleTime || "").localeCompare(b.scheduleTime || "")
-        );
+       const now = new Date();
+
+flights = (data.flights || [])
+    .filter(f => {
+        const time = f.publicEstimatedOffBlockTime || f.scheduleTime;
+        const departure = new Date(time);
+
+        return !isNaN(departure.getTime()) && departure >= now;
+    })
+    .sort((a, b) => {
+        const timeA = new Date(a.publicEstimatedOffBlockTime || a.scheduleTime);
+        const timeB = new Date(b.publicEstimatedOffBlockTime || b.scheduleTime);
+
+        return timeA - timeB;
+    });
 
         lastUpdated = new Date();
 
