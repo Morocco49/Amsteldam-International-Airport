@@ -71,13 +71,21 @@ function render(){
   previous[id]=sig;
   let route = f.route;
 
-if (Array.isArray(route)) {
-    route = route.join("-");
-} else if (route && typeof route === "object") {
-    route = route.displayCode ?? route.iata ?? route.code ?? route.name ?? "";
-} else {
-    route = String(route ?? "");
+if (!route || route === "") {
+    route = f.routeDestination || f.routeDestinations || f.destination || f.airport;
 }
+
+if (Array.isArray(route)) {
+    route = route.map(r =>
+        typeof r === "object"
+            ? r.city || r.publicName || r.iata || r.code || ""
+            : String(r)
+    ).filter(Boolean).join("-");
+} else if (route && typeof route === "object") {
+    route = route.city || route.publicName || route.iata || route.code || route.name || "";
+}
+
+route = String(route || "");
 
 let destination = route.split("-").filter(Boolean).slice(-1)[0] || "—";
   let destName=f.destination?.publicName||f.destination?.name||destination;
