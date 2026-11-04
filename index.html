@@ -64,9 +64,7 @@ function translateStatus(s) {
 }
    
 
-    if (s && typeof s === "object") {
-        raw = s.publicStatus ?? s.status ?? s.state ?? s.name ?? s.value ?? "";
-    }
+  
 
     let x = String(raw ?? "").toLowerCase();
 
