@@ -110,20 +110,22 @@ class Handler(SimpleHTTPRequestHandler):
                         departure_time = flight.get("scheduleTime")
 
                         if departure_time:
-                            departure = datetime.fromisoformat(
-                                departure_time.replace("Z", "+00:00")
+                            departure = datetime.combine(
+                                date.fromisoformat(day),
+                                datetime.strptime(
+                                    departure_time[:8],
+                                    "%H:%M:%S"
+                                ).time()
+                            ).replace(
+                                tzinfo=ZoneInfo("Europe/Amsterdam")
                             )
-
-                            if departure.tzinfo is None:
-                                departure = departure.replace(
-                                    tzinfo=ZoneInfo("Europe/Amsterdam")
-                                )
 
                             if departure >= now:
                                 all_flights.append(flight)
 
                     if len(batch) < 20:
                         break
+                        
         
                 data = json.dumps({
                     "flights": all_flights
