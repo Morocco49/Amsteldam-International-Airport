@@ -148,13 +148,14 @@ class Handler(SimpleHTTPRequestHandler):
                 print("FOUT BIJ OPHALEN VLUCHTEN:", repr(e))
                 import traceback
                 traceback.print_exc()
-               self.send_error(
-    500,
-    "FOUT: " + repr(e)
-)
+                self.send_error(
+                    500,
+                    "FOUT: " + repr(e)
                 )
 
             return
+
+           
 
         return super().do_GET()
 
