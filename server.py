@@ -85,7 +85,7 @@ class Handler(SimpleHTTPRequestHandler):
                 all_flights = []
                 now = datetime.now(ZoneInfo("Europe/Amsterdam"))
 
-                for page_no in range(5):
+                for page_no in range(500):
                     url = BASE + "/flights?" + urllib.parse.urlencode({
                         "scheduleDate": day,
                         "flightDirection": "D",
@@ -105,26 +105,7 @@ class Handler(SimpleHTTPRequestHandler):
                             res.read().decode("utf-8")
                         )
                     batch = payload.get("flights", [])
-
-                    for flight in batch:
-                        departure_time = flight.get("scheduleTime")
-
-                        if departure_time and day == now.date().isoformat():
-                            departure = datetime.combine(
-                                now.date(),
-                                datetime.strptime(
-                                    departure_time[:8],
-                                    "%H:%M:%S"
-                                ).time()
-                            ).replace(
-                                tzinfo=ZoneInfo("Europe/Amsterdam")
-                            )
-
-                            if departure >= now:
-                                all_flights.append(flight)
-
-                        elif day > now.date().isoformat():
-                            all_flights.append(flight)
+                    all_flights.extend(batch)
 
                     if len(batch) < 20:
                         break
