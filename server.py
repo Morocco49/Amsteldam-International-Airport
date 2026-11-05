@@ -88,7 +88,7 @@ class Handler(SimpleHTTPRequestHandler):
                 for page_no in range(500):
                     url = BASE + "/flights?" + urllib.parse.urlencode({
                         "scheduleDate": day,
-                        "flightDirection": "D",
+                        "flightDirection": q.get("direction", ["D"])[0].upper(),
                         "page": page_no
                     })
 
