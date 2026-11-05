@@ -1,133 +1,338 @@
+
 <!doctype html>
 <html lang="nl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Amsteldam International Airport — Departures</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amsteldam International Airport</title>
+
 <style>
 :root{--yellow:#ffdf00;--bg:#07111e;--panel:#101e30;--line:#304258;--white:#f6f8fb}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,Helvetica,sans-serif}
 header{background:#050b13;border-bottom:5px solid var(--yellow);padding:18px 2.5vw;display:flex;align-items:center;justify-content:space-between;gap:20px}
-.brand{font-size:clamp(25px,3vw,48px);font-weight:900;letter-spacing:.02em}.sub{font-size:clamp(13px,1.2vw,19px);font-weight:700;color:#b8c5d4;margin-top:5px}
-.clock{text-align:right;font-size:clamp(25px,3vw,46px);font-weight:900;font-variant-numeric:tabular-nums}.date{font-size:clamp(12px,1.2vw,18px);color:#c2cedb}
+.brand{font-size:clamp(25px,3vw,48px);font-weight:900;letter-spacing:.02em}
+.sub{font-size:clamp(13px,1.2vw,19px);font-weight:700;color:#b8c5d4;margin-top:5px}
+.clock{text-align:right;font-size:clamp(25px,3vw,46px);font-weight:900;font-variant-numeric:tabular-nums}
+.date{font-size:clamp(12px,1.2vw,18px);color:#c2cedb}
 .toolbar{display:flex;gap:12px;align-items:center;padding:12px 2.5vw;background:#0b1726;flex-wrap:wrap}
 button{border:2px solid #8191a5;background:#17283d;color:white;padding:10px 16px;font-weight:800;font-size:16px;border-radius:5px;cursor:pointer}
+button.active{background:var(--yellow);color:#111;border-color:var(--yellow)}
 #status{margin-left:auto;font-weight:700;color:#cbd6e2;font-size:15px}
 .notice{padding:10px 2.5vw;background:#17283d;color:#eaf0f7;font-size:15px;font-weight:700}
-.tablewrap{padding:0 2.5vw 25px;overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:850px;table-layout:fixed}
+.tablewrap{padding:0 2.5vw 25px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:850px;table-layout:fixed}
 thead th{background:var(--yellow);color:#111;padding:13px 10px;text-align:left;font-size:clamp(14px,1.35vw,21px);font-weight:900}
 tbody tr{background:var(--panel);border-bottom:2px solid var(--line);height:clamp(66px,7.2vh,92px);transition:background .3s}
-tbody tr:nth-child(even){background:#14243a}td{padding:10px;font-size:clamp(17px,1.8vw,27px);font-weight:800;line-height:1.12;overflow-wrap:anywhere}
+tbody tr:nth-child(even){background:#14243a}
+td{padding:10px;font-size:clamp(17px,1.8vw,27px);font-weight:800;line-height:1.12;overflow-wrap:anywhere}
 td.time{font-size:clamp(22px,2.5vw,38px);font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.dest{font-size:clamp(20px,2.25vw,34px);font-weight:900}
 td.remark{font-size:clamp(15px,1.55vw,23px);font-weight:900}
-.flight{color:var(--yellow);white-space:nowrap}.muted{color:#b7c5d6}.changed{background:#5a4700!important;outline:4px solid var(--yellow);animation:pulse .8s ease-in-out 3}
+.flight{color:var(--yellow);white-space:nowrap}
+.muted{color:#b7c5d6}
+.changed{background:#5a4700!important;outline:4px solid var(--yellow);animation:pulse .8s ease-in-out 3}
 @keyframes pulse{50%{filter:brightness(1.8)}}
 footer{padding:12px 2.5vw;color:#aebdce;font-size:14px}
-body.fullscreen header{padding-top:12px;padding-bottom:12px}body.fullscreen td{font-size:clamp(20px,2.1vw,34px)}body.fullscreen td.time{font-size:clamp(27px,3vw,46px)}body.fullscreen td.dest{font-size:clamp(25px,2.8vw,42px)}
-@media(max-width:700px){header{align-items:flex-start;flex-direction:column}.clock{text-align:left}.tablewrap{padding:0 10px}}
-</style></head>
+body.fullscreen header{padding-top:12px;padding-bottom:12px}
+body.fullscreen td{font-size:clamp(20px,2.1vw,34px)}
+body.fullscreen td.time{font-size:clamp(27px,3vw,46px)}
+body.fullscreen td.dest{font-size:clamp(25px,2.8vw,42px)}
+@media(max-width:700px){
+header{align-items:flex-start;flex-direction:column}
+.clock{text-align:left}
+.tablewrap{padding:0 10px}
+}
+</style>
+</head>
+
 <body>
-<header><div><div class="brand">✈ AMSTELDAM INTERNATIONAL AIRPORT</div><div class="sub" id="airportSub">VERTREKKEN · OFFICIËLE SCHIPHOL-VLUCHTGEGEVENS</div></div><div><div class="clock" id="clock">--:--:--</div><div class="date" id="date"></div></div></header>
-<div class="toolbar"><button id="full">⛶ Volledig scherm</button><button id="refresh">↻ Nu vernieuwen</button><span id="status">Verbinden…</span></div>
-<div class="notice" id="notice">Echte vluchtgegevens van Amsterdam Airport Schiphol · taal wisselt elke 10 seconden</div>
-<div class="tablewrap"><table><thead><tr><th style="width:13%" id="h-time">TIJD</th><th style="width:17%" id="h-flight">VLUCHT</th><th style="width:30%" id="h-dest">BESTEMMING</th><th style="width:12%" id="h-gate">GATE</th><th style="width:28%" id="h-remark">MEDEDELING</th></tr></thead><tbody id="rows"><tr><td colspan="5">Vluchten laden…</td></tr></tbody></table></div>
-<footer id="foot">Bron: Schiphol PublicFlight API. Amsteldam is de naam van dit ontwerp; de operationele vluchtgegevens zijn van Schiphol.</footer>
+
+<header>
+<div>
+<div class="brand">✈ AMSTELDAM INTERNATIONAL AIRPORT</div>
+<div class="sub" id="airportSub"></div>
+</div>
+<div>
+<div class="clock" id="clock">--:--:--</div>
+<div class="date" id="date"></div>
+</div>
+</header>
+
+<div class="toolbar">
+<button id="departures">✈ Departures</button>
+<button id="arrivals">🛬 Arrivals</button>
+<button id="full">⛶ Volledig scherm</button>
+<button id="refresh">↻ Nu vernieuwen</button>
+<span id="status">Verbinden…</span>
+</div>
+
+<div class="notice" id="notice">
+Echte vluchtgegevens van Amsterdam Airport Schiphol · taal wisselt elke 10 seconden
+</div>
+
+<div class="tablewrap">
+<table>
+<thead>
+<tr>
+<th style="width:13%" id="h-time">TIJD</th>
+<th style="width:17%" id="h-flight">VLUCHT</th>
+<th style="width:30%" id="h-dest">BESTEMMING</th>
+<th style="width:12%" id="h-gate">GATE</th>
+<th style="width:28%" id="h-remark">MEDEDELING</th>
+</tr>
+</thead>
+<tbody id="rows">
+<tr><td colspan="5">Vluchten laden…</td></tr>
+</tbody>
+</table>
+</div>
+
+<footer id="foot"></footer>
+
 <script>
 const translations={
-nl:{sub:"VERTREKKEN · OFFICIËLE SCHIPHOL-VLUCHTGEGEVENS",time:"TIJD",flight:"VLUCHT",dest:"BESTEMMING",gate:"GATE",remark:"MEDEDELING",loading:"Vluchten laden…",none:"Geen vertrekkende vluchten gevonden.",on:"Op tijd",boarding:"Boarding",delayed:"Vertraagd",departed:"Vertrokken",cancelled:"Geannuleerd",unknown:"Status niet beschikbaar",foot:"Bron: Schiphol PublicFlight API. Amsteldam is de naam van dit ontwerp; de operationele vluchtgegevens zijn van Schiphol.",full:"⛶ Volledig scherm",refresh:"↻ Nu vernieuwen"},
-en:{sub:"DEPARTURES · OFFICIAL SCHIPHOL FLIGHT DATA",time:"TIME",flight:"FLIGHT",dest:"DESTINATION",gate:"GATE",remark:"REMARKS",loading:"Loading flights…",none:"No departing flights found.",on:"On time",boarding:"Boarding",delayed:"Delayed",departed:"Departed",cancelled:"Cancelled",unknown:"Status unavailable",foot:"Source: Schiphol PublicFlight API. Amsteldam is the design name; operational flight data is from Schiphol.",full:"⛶ Full screen",refresh:"↻ Refresh now"},
-fr:{sub:"DÉPARTS · DONNÉES OFFICIELLES DES VOLS DE SCHIPHOL",time:"HEURE",flight:"VOL",dest:"DESTINATION",gate:"PORTE",remark:"INFORMATIONS",loading:"Chargement des vols…",none:"Aucun vol au départ trouvé.",on:"À l’heure",boarding:"Embarquement",delayed:"Retardé",departed:"Parti",cancelled:"Annulé",unknown:"Statut indisponible",foot:"Source : API PublicFlight de Schiphol. Amsteldam est le nom du design ; les données réelles proviennent de Schiphol.",full:"⛶ Plein écran",refresh:"↻ Actualiser"},
-zh:{sub:"出发航班 · 史基浦机场官方航班数据",time:"时间",flight:"航班",dest:"目的地",gate:"登机口",remark:"航班信息",loading:"正在加载航班…",none:"未找到出发航班。",on:"准时",boarding:"正在登机",delayed:"延误",departed:"已起飞",cancelled:"已取消",unknown:"状态不可用",foot:"数据来源：史基浦机场 PublicFlight API。Amsteldam 是本设计名称；实际航班数据来自史基浦机场。",full:"⛶ 全屏",refresh:"↻ 立即刷新"}
+nl:{
+subD:"VERTREKKEN · OFFICIËLE SCHIPHOL-VLUCHTGEGEVENS",
+subA:"AANKOMSTEN · OFFICIËLE SCHIPHOL-VLUCHTGEGEVENS",
+time:"TIJD",flight:"VLUCHT",dest:"BESTEMMING",origin:"HERKOMST",
+gate:"GATE",belt:"BAGAGEBAND",remark:"MEDEDELING",status:"STATUS",
+noneD:"Geen vertrekkende vluchten gevonden.",
+noneA:"Geen aankomende vluchten gevonden.",
+loading:"Vluchten laden…",on:"Op tijd",boarding:"Boarding",
+delayed:"Vertraagd",departed:"Vertrokken",cancelled:"Geannuleerd",
+landed:"Geland",approach:"Nadering",expected:"Verwacht",
+unknown:"Status niet beschikbaar",
+foot:"Bron: Schiphol PublicFlight API. Amsteldam is de naam van dit ontwerp; de operationele vluchtgegevens zijn van Schiphol.",
+full:"⛶ Volledig scherm",refresh:"↻ Nu vernieuwen"
+},
+en:{
+subD:"DEPARTURES · OFFICIAL SCHIPHOL FLIGHT DATA",
+subA:"ARRIVALS · OFFICIAL SCHIPHOL FLIGHT DATA",
+time:"TIME",flight:"FLIGHT",dest:"DESTINATION",origin:"ORIGIN",
+gate:"GATE",belt:"BAGGAGE BELT",remark:"REMARKS",status:"STATUS",
+noneD:"No departing flights found.",
+noneA:"No arriving flights found.",
+loading:"Loading flights…",on:"On time",boarding:"Boarding",
+delayed:"Delayed",departed:"Departed",cancelled:"Cancelled",
+landed:"Landed",approach:"Approaching",expected:"Expected",
+unknown:"Status unavailable",
+foot:"Source: Schiphol PublicFlight API. Amsteldam is the design name; operational flight data is from Schiphol.",
+full:"⛶ Full screen",refresh:"↻ Refresh now"
+},
+fr:{
+subD:"DÉPARTS · DONNÉES OFFICIELLES DES VOLS DE SCHIPHOL",
+subA:"ARRIVÉES · DONNÉES OFFICIELLES DES VOLS DE SCHIPHOL",
+time:"HEURE",flight:"VOL",dest:"DESTINATION",origin:"PROVENANCE",
+gate:"PORTE",belt:"TAPIS À BAGAGES",remark:"INFORMATIONS",status:"STATUT",
+noneD:"Aucun vol au départ trouvé.",
+noneA:"Aucun vol à l’arrivée trouvé.",
+loading:"Chargement des vols…",on:"À l’heure",boarding:"Embarquement",
+delayed:"Retardé",departed:"Parti",cancelled:"Annulé",
+landed:"Atterri",approach:"En approche",expected:"Prévu",
+unknown:"Statut indisponible",
+foot:"Source : API PublicFlight de Schiphol. Amsteldam est le nom du design ; les données réelles proviennent de Schiphol.",
+full:"⛶ Plein écran",refresh:"↻ Actualiser"
+},
+zh:{
+subD:"出发航班 · 史基浦机场官方航班数据",
+subA:"到达航班 · 史基浦机场官方航班数据",
+time:"时间",flight:"航班",dest:"目的地",origin:"出发地",
+gate:"登机口",belt:"行李转盘",remark:"航班信息",status:"状态",
+noneD:"未找到出发航班。",
+noneA:"未找到到达航班。",
+loading:"正在加载航班…",on:"准时",boarding:"正在登机",
+delayed:"延误",departed:"已起飞",cancelled:"已取消",
+landed:"已降落",approach:"正在接近",expected:"预计到达",
+unknown:"状态不可用",
+foot:"数据来源：史基浦机场 PublicFlight API。Amsteldam 是本设计名称；实际航班数据来自史基浦机场。",
+full:"⛶ 全屏",refresh:"↻ 立即刷新"
+}
 };
-const langs=["nl","en","fr","zh"];let langIndex=0,flights=[],previous={},lastUpdated=null;
+
+const langs=["nl","en","fr","zh"];
+let langIndex=0;
+let flights=[];
+let previous={};
+let direction="D";
+
 const $=id=>document.getElementById(id);
-function translateStatus(s) {
-    let states = [];
+function T(){return translations[langs[langIndex]];}
 
-    if (Array.isArray(s)) {
-        states = s;
-    } else if (s && typeof s === "object") {
-        states = s.flightStates || s.codes || [];
-    }
+function translateStatus(states){
+if(!Array.isArray(states)) states=[];
 
-    if (typeof states === "string") {
-        states = [states];
-    }
-
-    if (states.includes("CNL")) return T().cancelled;
-    if (states.includes("DEL")) return T().delayed;
-    if (states.includes("BRD")) return T().boarding;
-    if (states.includes("DEP")) return T().departed;
-    if (states.includes("SCH")) return T().on;
-
-    return T().unknown;
+if(direction==="A"){
+if(states.includes("LND")) return T().landed;
+if(states.includes("FIR")) return T().approach;
+if(states.includes("EXP")) return T().expected;
+return T().unknown;
 }
-   
 
-  
+if(states.includes("CNL")) return T().cancelled;
+if(states.includes("DEL")) return T().delayed;
+if(states.includes("BRD")) return T().boarding;
+if(states.includes("DEP")) return T().departed;
+if(states.includes("SCH")) return T().on;
+return T().unknown;
+}
 
-function T(){return translations[langs[langIndex]]}
-function applyLanguage(){let t=T();$("airportSub").textContent=t.sub;$("h-time").textContent=t.time;$("h-flight").textContent=t.flight;$("h-dest").textContent=t.dest;$("h-gate").textContent=t.gate;$("h-remark").textContent=t.remark;$("foot").textContent=t.foot;$("full").textContent=t.full;$("refresh").textContent=t.refresh;render()}
-function clock(){let d=new Date();$("clock").textContent=d.toLocaleTimeString("nl-NL");$("date").textContent=d.toLocaleDateString("nl-NL",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}
-function value(x){return x===null||x===undefined||x===""?"—":x}
+function applyLanguage(){
+let t=T();
+
+$("airportSub").textContent=direction==="A"?t.subA:t.subD;
+$("h-time").textContent=t.time;
+$("h-flight").textContent=t.flight;
+$("h-dest").textContent=direction==="A"?t.origin:t.dest;
+$("h-gate").textContent=direction==="A"?t.belt:t.gate;
+$("h-remark").textContent=t.remark;
+$("foot").textContent=t.foot;
+$("full").textContent=t.full;
+$("refresh").textContent=t.refresh;
+
+render();
+}
+
+function clock(){
+let d=new Date();
+$("clock").textContent=d.toLocaleTimeString("nl-NL");
+$("date").textContent=d.toLocaleDateString("nl-NL",{
+weekday:"long",year:"numeric",month:"long",day:"numeric"
+});
+}
+
+function value(x){
+return x===null||x===undefined||x===""?"—":x;
+}
+
 function render(){
- const body=$("rows");if(!flights.length){body.innerHTML=`<tr><td colspan="5">${T().none}</td></tr>`;return}
- body.innerHTML=flights.map(f=>{
-console.log("VLUCHTSTATUS:", f.publicFlightState);
-let id=f.id||f.flightName,remark=translateStatus(f.publicFlightState?.flightStates);
-  let sig=[f.scheduleTime,f.flightName,f.route,f.gate,remark].join("|");
-  let changed=previous[id]!==undefined&&previous[id]!==sig;
-  previous[id]=sig;
-  let destinations = f.route?.destinations || [];
+const body=$("rows");
 
-let destination = Array.isArray(destinations) && destinations.length
-    ? destinations[destinations.length - 1]
-    : "—";
-  let destName=f.destination?.publicName||f.destination?.name||destination;let time = (f.publicEstimatedOffBlockTime || f.scheduleTime || "—");
-time = time.includes("T") ? time.split("T")[1].slice(0,5) : time.slice(0,5);
-  return `<tr class="${changed?"changed":""}"><td class="time">${value(time)}</td><td class="flight">${value(f.flightName)}</td><td class="dest">${value(destName)} <span class="muted">(${destination})</span></td><td>${value(f.gate)}</td><td class="remark">${remark}</td></tr>`
- }).join("");
+if(!flights.length){
+body.innerHTML=`<tr><td colspan="5">${direction==="A"?T().noneA:T().noneD}</td></tr>`;
+return;
 }
+
+body.innerHTML=flights.map(f=>{
+let id=f.id||f.flightName;
+let states=f.publicFlightState?.flightStates||[];
+let remark=translateStatus(states);
+
+let time=direction==="A"
+?(f.actualLandingTime||f.estimatedLandingTime||f.scheduleDateTime||f.scheduleTime||"—")
+:(f.publicEstimatedOffBlockTime||f.scheduleTime||"—");
+
+if(time.includes("T")){
+time=time.split("T")[1].slice(0,5);
+}else{
+time=time.slice(0,5);
+}
+
+let destinations=f.route?.destinations||[];
+let place="—";
+
+if(Array.isArray(destinations)&&destinations.length){
+place=direction==="A"?destinations[0]:destinations[destinations.length-1];
+}
+
+let gateOrBelt=direction==="A"
+?(f.baggageClaim?.belts||[]).join(", ")
+:f.gate;
+
+let sig=[time,f.flightName,place,gateOrBelt,remark].join("|");
+let changed=previous[id]!==undefined&&previous[id]!==sig;
+previous[id]=sig;
+
+return `<tr class="${changed?"changed":""}">
+<td class="time">${value(time)}</td>
+<td class="flight">${value(f.flightName)}</td>
+<td class="dest">${value(place)}</td>
+<td>${value(gateOrBelt)}</td>
+<td class="remark">${remark}</td>
+</tr>`;
+}).join("");
+}
+
 async function load(){
-    $("status").textContent = "Verbinden met Schiphol…";
+$("status").textContent="Verbinden met Schiphol…";
 
-    try {
-        const r = await fetch(
-            "/api/flights?date=" + new Date().toISOString().slice(0,10) + "&page=0",
-            { cache: "no-store" }
-        );
-
-        if (!r.ok) {
-            throw new Error("API-fout " + r.status);
-        }
-
-        const data = await r.json();
-
-       const now = new Date();
-
-flights = (data.flights || []).sort((a,b) =>
-    (a.scheduleTime || "").localeCompare(b.scheduleTime || "")
+try{
+const r=await fetch(
+"/api/flights?date="+new Date().toISOString().slice(0,10)+"&direction="+direction+"&page=0",
+{cache:"no-store"}
 );
 
-        lastUpdated = new Date();
-
-        $("status").textContent =
-            "Live data · bijgewerkt " + lastUpdated.toLocaleTimeString("nl-NL");
-
-        render();
-
-    } catch(e) {
-        console.error("FOUT BIJ LADEN:", e);
-
-        $("status").textContent = "Niet verbonden";
-
-        $("rows").innerHTML =
-            `<tr><td colspan="5">Fout: ${String(e.message)}</td></tr>`;
-    }
+if(!r.ok){
+throw new Error("API-fout "+r.status);
 }
-$("full").onclick=async()=>{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()};
-document.addEventListener("fullscreenchange",()=>document.body.classList.toggle("fullscreen",!!document.fullscreenElement));
+
+const data=await r.json();
+
+flights=(data.flights||[]).sort((a,b)=>{
+let timeA=direction==="A"
+?(a.actualLandingTime||a.estimatedLandingTime||a.scheduleTime||"")
+:(a.scheduleTime||"");
+let timeB=direction==="A"
+?(b.actualLandingTime||b.estimatedLandingTime||b.scheduleTime||"")
+:(b.scheduleTime||"");
+return timeA.localeCompare(timeB);
+});
+
+let updated=new Date();
+
+$("status").textContent=
+"Live data · bijgewerkt "+updated.toLocaleTimeString("nl-NL");
+
+render();
+
+}catch(e){
+console.error("FOUT BIJ LADEN:",e);
+$("status").textContent="Niet verbonden";
+$("rows").innerHTML=
+`<tr><td colspan="5">Fout: ${String(e.message)}</td></tr>`;
+}
+}
+
+function setDirection(newDirection){
+direction=newDirection;
+
+$("departures").classList.toggle("active",direction==="D");
+$("arrivals").classList.toggle("active",direction==="A");
+
+applyLanguage();
+load();
+}
+
+$("full").onclick=async()=>{
+if(!document.fullscreenElement){
+await document.documentElement.requestFullscreen();
+}else{
+await document.exitFullscreen();
+}
+};
+
+document.addEventListener("fullscreenchange",()=>{
+document.body.classList.toggle("fullscreen",!!document.fullscreenElement);
+});
+
 $("refresh").onclick=load;
-clock();setInterval(clock,1000);applyLanguage();load();setInterval(load,60000);
-setInterval(()=>{langIndex=(langIndex+1)%langs.length;applyLanguage()},10000);
-</script></body></html>
+$("departures").onclick=()=>setDirection("D");
+$("arrivals").onclick=()=>setDirection("A");
+
+clock();
+setInterval(clock,1000);
+
+applyLanguage();
+load();
+
+setInterval(load,60000);
+
+setInterval(()=>{
+langIndex=(langIndex+1)%langs.length;
+applyLanguage();
+},10000);
+</script>
+
+</body>
+</html>
+
