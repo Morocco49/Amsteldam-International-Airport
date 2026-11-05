@@ -107,25 +107,10 @@ class Handler(SimpleHTTPRequestHandler):
                     batch = payload.get("flights", [])
 
                     for flight in batch:
-                        departure_time = flight.get("scheduleTime")
-
-                        if departure_time:
-                            departure = datetime.combine(
-                                date.fromisoformat(day),
-                                datetime.strptime(
-                                    departure_time[:8],
-                                    "%H:%M:%S"
-                                ).time()
-                            ).replace(
-                                tzinfo=ZoneInfo("Europe/Amsterdam")
-                            )
-
-                            if departure >= now:
-                                all_flights.append(flight)
+                        all_flights.append(flight)
 
                     if len(batch) < 20:
                         break
-                        
         
                 data = json.dumps({
                     "flights": all_flights
